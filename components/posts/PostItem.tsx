@@ -1,34 +1,34 @@
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
+import { Post } from "../home-page/FeaturedPosts";
 import classes from "./PostItem.module.css";
 
-interface PostItemProps {
-  title: string;
-  image: string;
-  excerpt: string;
-  date: string;
-  slug: string;
-}
-
-const PostItem = ({ title, image, excerpt, date, slug }: PostItemProps) => {
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
+const PostItem = ({ post }: { post: Post }) => {
+  const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 
-  const imagePath = `/images/posts/${slug}/${image}`;
+  const imagePath = `/images/posts/${post.slug}/${post.image}`;
+  const linkPath = `/posts/${post.slug}`;
 
   return (
     <li className={classes.post}>
-      <Link href="/">
+      <Link href={linkPath}>
         <div className={classes.post}>
-          <Image src={imagePath} alt={title} width={300} height={200} />
+          <Image
+            src={imagePath}
+            alt={post.title}
+            width={300}
+            height={200}
+            layout="responsive"
+          />
         </div>
         <div className={classes.content}>
-          <h3>{title}</h3>
+          <h3>{post.title}</h3>
           <time>{formattedDate}</time>
-          <p>{excerpt}</p>
+          <p>{post.excerpt}</p>
         </div>
       </Link>
     </li>

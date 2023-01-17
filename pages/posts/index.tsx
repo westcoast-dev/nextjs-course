@@ -1,5 +1,8 @@
+import AllPosts from "@/components/posts/AllPosts";
+import { DUMMY_POSTS } from "..";
+
 const AllPostsPage = () => {
-  return <div>Enter</div>;
+  return <AllPosts posts={DUMMY_POSTS} />;
 };
 
 export default AllPostsPage;
