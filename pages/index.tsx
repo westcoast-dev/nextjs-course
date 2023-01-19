@@ -1,48 +1,33 @@
 import Hero from "@/components/home-page/Hero";
 import FeaturedPosts from "@/components/home-page/FeaturedPosts";
+import { getFeaturedPosts } from "@/lib/posts-util";
 
-export const DUMMY_POSTS = [
-  {
-    slug: "getting-started-with-nextjs",
-    title: "Getting Started with NextJS",
-    image: "getting-started-nextjs.png",
-    excerpt:
-      "NextJS is a React Framework for production - it makes building fullstack React apps and sites a breeze and ships with built-in SSR.",
-    date: "2023-01-17",
-  },
-  {
-    slug: "getting-started-with-nextjs2",
-    title: "Getting Started with NextJS",
-    image: "getting-started-nextjs.png",
-    excerpt:
-      "NextJS is a React Framework for production - it makes building fullstack React apps and sites a breeze and ships with built-in SSR.",
-    date: "2023-01-17",
-  },
-  {
-    slug: "getting-started-with-nextjs3",
-    title: "Getting Started with NextJS",
-    image: "getting-started-nextjs.png",
-    excerpt:
-      "NextJS is a React Framework for production - it makes building fullstack React apps and sites a breeze and ships with built-in SSR.",
-    date: "2023-01-17",
-  },
-  {
-    slug: "getting-started-with-nextjs4",
-    title: "Getting Started with NextJS",
-    image: "getting-started-nextjs.png",
-    excerpt:
-      "NextJS is a React Framework for production - it makes building fullstack React apps and sites a breeze and ships with built-in SSR.",
-    date: "2023-01-17",
-  },
-];
+export interface Posts {
+  title: string;
+  image: string;
+  excerpt: string;
+  date: string;
+  isFeatured: boolean;
+  slug: string;
+}
 
-const HomePage = () => {
+const HomePage = ({ posts }: { posts: Posts[] }) => {
   return (
     <>
       <Hero />
-      <FeaturedPosts posts={DUMMY_POSTS} />
+      <FeaturedPosts posts={posts} />
     </>
   );
+};
+
+export const getStaticProps = async () => {
+  const featuredPosts = getFeaturedPosts();
+
+  return {
+    props: {
+      posts: featuredPosts,
+    },
+  };
 };
 
 export default HomePage;
