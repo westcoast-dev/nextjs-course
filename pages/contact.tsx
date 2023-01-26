@@ -1,5 +1,7 @@
+import ContactForm from "@/components/contact/ContactForm";
+
 const ContactPage = () => {
-  return <div>Enter</div>;
+  return <ContactForm />;
 };
 
 export default ContactPage;
