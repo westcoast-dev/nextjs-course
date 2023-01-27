@@ -1,26 +1,95 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./ContactForm.module.css";
+import Notification from "../ui/notification";
+
+interface FormData {
+  email: string;
+  name: string;
+  message: string;
+}
+
+const sendContactData = async (formData: FormData) => {
+  const res = await fetch("/api/contact", {
+    method: "POST",
+    body: JSON.stringify(formData),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Something went wrong!");
+  }
+};
 
 const ContactForm = () => {
-  const [data, setData] = useState({ email: "", name: "", message: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    name: "",
+    message: "",
+  });
+  const [reqStatus, setReqStatus] = useState("");
+  const [reqError, setReqError] = useState("");
+
+  useEffect(() => {
+    if (reqStatus !== "pending") {
+      const timer = setTimeout(() => {
+        setReqStatus("");
+        setReqError("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [reqStatus]);
 
   const changeHandler = (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    setData({ ...data, [e.target.id]: e.target.value });
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const sendMessageHandler = (e: React.FormEvent) => {
+  const sendMessageHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    fetch("/api/contact", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" },
-    });
+    setReqStatus("pending");
+
+    try {
+      await sendContactData(formData);
+      setReqStatus("success");
+      setFormData({ email: "", name: "", message: "" });
+    } catch (error: any) {
+      setReqError(error.message);
+      setReqStatus("error");
+    }
   };
+
+  let notification;
+
+  if (reqStatus === "pending") {
+    notification = {
+      status: "pending",
+      title: "Sending message...",
+      message: "Your message is on its way!",
+    };
+  }
+
+  if (reqStatus === "success") {
+    notification = {
+      status: "success",
+      title: "Success!",
+      message: "Message sent successfully!",
+    };
+  }
+
+  if (reqStatus === "error") {
+    notification = {
+      status: "error",
+      title: "Error!",
+      message: reqError,
+    };
+  }
 
   return (
     <section className={classes.contact}>
@@ -33,7 +102,7 @@ const ContactForm = () => {
               type="email"
               id="email"
               required
-              value={data.email}
+              value={formData.email}
               onChange={changeHandler}
             />
           </div>
@@ -43,7 +112,7 @@ const ContactForm = () => {
               type="text"
               id="name"
               required
-              value={data.name}
+              value={formData.name}
               onChange={changeHandler}
             />
           </div>
@@ -54,7 +123,7 @@ const ContactForm = () => {
             id="message"
             rows={5}
             required
-            value={data.message}
+            value={formData.message}
             onChange={changeHandler}
           ></textarea>
         </div>
@@ -62,6 +131,13 @@ const ContactForm = () => {
           <button>Send Message</button>
         </div>
       </form>
+      {notification && (
+        <Notification
+          status={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
     </section>
   );
 };
