@@ -1,19 +1,18 @@
 import PostContent from "@/components/posts/post-detail/PostContent";
 import { getPostData, getPostsFiles } from "@/lib/posts-util";
 import { GetStaticProps } from "next";
-import { Post } from "@/components/posts/post-detail/PostContent";
-import Head from "next/head";
+
+interface Post {
+  title: string;
+  image: string;
+  excerpt: string;
+  date: string;
+  content: string;
+  slug: string;
+}
 
 const PostDetailPage = ({ post }: { post: Post }) => {
-  return (
-    <>
-      <Head>
-        <title>{post.title}</title>
-        <meta name="description" content={post.excerpt} />
-      </Head>
-      <PostContent post={post} />
-    </>
-  );
+  return <PostContent post={post} />;
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
